@@ -1,8 +1,10 @@
+prg2mn:
+	gcc -L/home/she/SheRepo/prg2 -Wall prg2mn.c -o prg2mn -lshared
 
-prg2lb: prog2lb.so
-	gcc -shared -o prog2lb.so
-
-prog2lb.so: prog2lb.cpp prog2.h
-	gcc -c prog2lb.cpp
+prg2lb.so:
+	gcc -shared -o prg2lb.so  prg2lb.o
+  
+prg2lb.o:
+	gcc -c -Wall -Werror  -fPIC  prg2lb.c
 
 
