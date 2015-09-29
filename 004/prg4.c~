@@ -3,6 +3,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
+
 
  char * GtPPID(char *fNm,char *Nm)
  {
@@ -90,6 +92,39 @@
 
 
 
+void prcdir()
+{
+  DIR *dir_p;
+  struct dirent *direp;
+  char buf[100],buf2[100];
+  int i;
+
+  dir_p=opendir("/proc");
+  if(dir_p==NULL) exit(1);
+  
+  while( (direp=readdir(dir_p))!=NULL)
+  {
+    if(direp->d_type==4)
+    {
+       strncpy(buf,direp->d_name,100);
+       buf[99]=0;
+       
+       //printf(" d - %s    ",buf); 
+       if( (i=atoi(buf))!=NULL )
+       {
+            //printf("d- %d \n",i);
+            sprintf(buf2,"%d",i);
+            printf("%s \n",PrcChain(buf2));
+       }
+
+    }
+
+  }
+}
+
+
+
+
 int main(int args, char **argv, char **argc)
 {
 
@@ -111,11 +146,10 @@ printf(" %d  \n",fl);
      printf("%s",s[0]);
    }
 
-
-
+prcdir();
    if(args==1)
    {// for all
-
+      prcdir();
 
 
    }else
