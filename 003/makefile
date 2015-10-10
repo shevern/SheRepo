@@ -9,7 +9,8 @@ libprg2lb.so: prg2lb.o
 
 prg2lb.o:
 	gcc -c -Wall -Werror  -fPIC  prg2lb.c
-
+clean:
+	rm prg3.o prg3 prg2lb.o libprg2lb.so
 
 
 

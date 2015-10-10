@@ -1,14 +1,10 @@
 #include <stdio.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <dirent.h>
-//#include <stdlib.h>
 
 extern char **environ;
-
 
 
 //*********************  Find file
@@ -20,12 +16,12 @@ int fnd(char *fl,char * fl2)
   char buf[100];
   char hm[100];
 
-  genv("HOME=",hm);  
+  if (genv("PWD=",hm)==1) return 1;  
 
-  //printf("** %s \n",hm);
+  //printf("******* %s \n",hm);
   
   dr=opendir(hm);
-  if(dr==NULL){perror("dir --- "); return 1;}
+  if(dr==NULL){perror("dir ---"); return 1;}
   
   while(( dre=readdir(dr))!=NULL)
   {
@@ -48,17 +44,21 @@ int fnd(char *fl,char * fl2)
 int genv(char *nm,char *vl)
 {
   //  getenv  -  putenv
-  char *s;
+  char *s,*ss;
   int i;
   
   i=0;
   vl[0]=0;
   while( (s=&environ[i++][0])!=NULL )
   {
-    if(strstr(s,nm)!=NULL)
+    if((ss=strstr(s,nm))!=NULL)
     {
-      sprintf(vl,"%s",&s[strlen(nm)]);
-      return 0;
+      if(strlen(s)==strlen(ss))
+      {
+        //printf("%s",s);
+        sprintf(vl,"%s",&s[strlen(nm)]);
+        return 0;
+      }
     }
   }
   return 1;
@@ -82,10 +82,12 @@ int f1(char *cmd)
       {
          //setpgid(getpid(),getpid());
          //setsid();
-         //signal(SIGINT,SIG_DFL); 
+         signal(SIGINT,SIG_DFL); 
+         signal(SIGTERM,SIG_DFL);
+
          //execle("/bin/sh","sh","-c",cmd,0,environ);
          execl("/bin/sh","sh","-c",cmd,0);
-         printf("Err \n");
+         //printf("Err \n");
      //arr[0]="pwd"; arr[1]=0; arr[2]=0;
      //if(execvp("pwd",arr)==-1) perror(" Er -");    
      //system("cd / | pwd");
@@ -121,14 +123,14 @@ void * setsig(int nsig, void (*hndl)(int))
 
 void ha(int i)
 {
-   printf("Bay  \n");
+   printf(" Bay  \n");
    setsig(SIGINT,SIG_DFL);
    kill(getpid(),SIGINT);
 }
 
 void ha2(int i)
 {
-   printf("Bay  \n");
+   printf(" Bay  \n");
    setsig(SIGTERM,SIG_DFL);
    kill(getpid(),SIGTERM);
 }

@@ -20,7 +20,7 @@
 
  
    fl=open(fNm,O_RDONLY);
-   if( fl ==-1 ) { return 0;}
+   if( fl ==-1 ) { return NULL;}
 
    //printf(" ****** %d \n",fl);
 
@@ -74,9 +74,13 @@
     char pt[BUFSIZ];
     char pt3[BUFSIZ];
     char *pt2;
+    int i;
 
    sprintf(pt3,"%s",id);
    sprintf(pt,"/proc/%s/status",id);
+   
+   if( (i=atoi(id))==NULL )  return NULL;
+   if((pt2=GtPPID(pt,"PPid"))==NULL) return NULL;
 
    while ((pt2=GtPPID(pt,"PPid"))!=NULL)
    {
@@ -86,6 +90,7 @@
    }
    return pt3; 
  }
+
 
 
 
@@ -125,35 +130,17 @@ void prcdir()
 
 int main(int args, char **argv, char **argc)
 {
-
-   char *b;
    char *a;
-   int i;
-   char pt[BUFSIZ];
-   char prNm[50];
- 
-int *fl;
-char s[2];
-char fNm[50];
 
-/*
-sprintf(fNm,"/proc/10");
-s[1]=0;
-fl=open(fNm,O_RDONLY);
-printf(" %d  \n",fl);
-   while(read(fl,s,1)>0)
-   {
-     printf("%s",s[0]);
-   }
-*/
 
    if(args==1)
    {// for all
       prcdir();
    }else
    {
-      printf(" %s  \n",PrcChain(argv[1]));
+     if( (a=PrcChain(argv[1]))!=NULL )
+      printf(" %s  \n",a);
    }
-  printf(" ***************  \n");
+  //printf(" ***************  \n");
   exit(0);
 }

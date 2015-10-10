@@ -27,7 +27,7 @@ int main(int args, char **argv, char **argc)
      for(i=0;i<l;i++)ss2[j--]=ss[i];
      ss2[l]=0;
 
-     printf("[%s]\n",ss2);
+     printf("%s\n",ss2);
   }
 
 

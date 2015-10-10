@@ -19,20 +19,14 @@ int main(int args, char **argv, char **argc)
       if(a==0) break;
 
       b=strstr(a,"PWD");
-      if(b!=0)
+      if(b!=NULL)
       {
         if(strlen(b)==strlen(a))
         {
-      printf(" %s  \n",b);    
+           printf("%s\n",&b[4]);    
         }
-
-      } 
-
-
-      
+      }   
       //printf(" %s  \n",a);
    }
-
    //printf(" %c  \n",args);
-
 }
