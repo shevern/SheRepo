@@ -49,7 +49,7 @@ void *cli(void * par)
    bcopy( (void*)hp->h_addr, (void*)&saddr.sin_addr, hp->h_length);// cpy addr
    saddr.sin_port=htons(prt);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
-   printf("Recv addr %s prt %d \n",inet_ntoa(&saddr.sin_addr),saddr.sin_port);
+   printf("Recv addr %s prt %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
    // *********************************
 
 
@@ -118,7 +118,7 @@ void *svr(void * par)
    bcopy( (void*)hp->h_addr, (void*)&saddr.sin_addr, hp->h_length);// cpy addr
    saddr.sin_port=htons(prt);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
-   printf("Remote addr %s %d \n",inet_ntoa(&saddr.sin_addr),saddr.sin_port);
+   printf("Remote addr %s %d \n",inet_ntoa(saddr.sin_addr),ntohs( saddr.sin_port));
    //*********************************
 
    // socket                        IPPROTO_UDP
