@@ -5,6 +5,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include <string.h>
+
 #include <pthread.h>
 #include <signal.h>
 
@@ -13,6 +15,7 @@
 
 int st;
 
+void exit(int i);
 
 // Client for Listening  (UDP svr)
 void *cli(void * par)
@@ -51,7 +54,8 @@ void *cli(void * par)
    inet_aton("127.0.1.255",&saddr.sin_addr);
    saddr.sin_port=htons(prt);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
-   printf("Recv addr %s prt %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+   //printf("Recv addr %s prt %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+   printf("Recv addr 127.0.1.255 prt %d \n",ntohs(saddr.sin_port));
    // *********************************
 
 
@@ -124,7 +128,8 @@ void *svr(void * par)
    inet_aton("127.0.1.255",&saddr.sin_addr);
    saddr.sin_port=htons(prt);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
-   printf("Remote addr %s %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+   //printf("Remote addr %s %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+   printf("Remote addr 127.0.1.255 %d \n",ntohs(saddr.sin_port));
    //*********************************
 
    // socket                        IPPROTO_UDP

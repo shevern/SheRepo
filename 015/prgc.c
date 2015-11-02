@@ -5,6 +5,10 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include <string.h>
+#include <stdlib.h>
+
+
 #include <signal.h>
 #include <pthread.h>
 
@@ -87,7 +91,7 @@ main(int ar,char ** arv)
 
    signal(SIGINT,sgnl);
 
-   if(ar<4) exit(0);
+   if(ar<4) {printf("CliName SvrAddr Svr13Port \n"); exit(0);}
 
    sprintf(nm,"%s",&arv[1][0]);
   
@@ -127,7 +131,7 @@ main(int ar,char ** arv)
    if( connect(sock_id, (struct sockaddr*)&saddr,sizeof(saddr))==-1)
          oops("Conn");
    //if( connect(sock_id,arp->ai_addr,arp->ai_addrlen)!=-1) break; 
-   printf("Conn to svr %s %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+   printf("Conn to svr %s %d \n",(char*)inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
 
    pthread_create(&th,NULL,fcli,NULL);
 
@@ -212,18 +216,18 @@ main(int ar,char ** arv)
 
       continue;
 
-      sprintf(buf,"qqqqqqqqqqqqqqqqqqqqq");
+      //sprintf(buf,"qqqqqqqqqqqqqqqqqqqqq");
    
       //write(sock_id,buf,strlen(buf));
       //sprintf(buf,"");
       //read(sock_id,buf,200);
 
-      printf(buf);
-      send(sock_id,buf,100,0);
-      sprintf(buf,"");
+      //printf(buf);
+      //send(sock_id,buf,100,0);
+      //sprintf(buf,"");
       //recv(sock_id,buf,100,0);
-      buf[200]=0;    
-      printf(buf);
+      //buf[200]=0;    
+      //printf(buf);
 
       sleep(1);
    }

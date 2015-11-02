@@ -8,10 +8,10 @@
 #include <pthread.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <syslog.h>
 
 #include <stdlib.h>
 #include <string.h>
-
 
 //   
 #define oops(e) { perror(e);exit(1);}
@@ -21,7 +21,12 @@ int st;
 void ss1(int s)
 {
   st=0;
-  printf("Svr's Gone away \n");
+  //printf(" Gone away \n");
+
+  openlog("My web",LOG_PID |LOG_CONS, LOG_DAEMON);
+  syslog(LOG_INFO,"Stop");
+  closelog();
+
   exit(0);
 }
 
@@ -149,11 +154,11 @@ void * websvr(void *ppp)
    //  Fill   socketaddr_in from hostent  (h_addr - first addr)
    bzero((void*)&saddr,sizeof(saddr));//Clear
    //bcopy( (void*)hp->h_addr, (void*)&saddr.sin_addr, hp->h_length);// cpy addr
+   //inet_aton("192.168.223.131",&saddr.sin_addr);
    inet_aton("127.0.1.1",&saddr.sin_addr);
    saddr.sin_port=htons(13000);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
- //  printf("Server addr %s ,port %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
-printf("Server addr 127.0.1.1 ,port 13000 \n");
+//   printf("Server addr %s ,port %d \n",inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
    // socket                        IPPROTO_UDP
    sock_id=socket(PF_INET,SOCK_STREAM,0);
    if(sock_id==-1)oops("Sock");
@@ -166,7 +171,7 @@ printf("Server addr 127.0.1.1 ,port 13000 \n");
       fd=accept(sock_id, NULL,NULL);  
       f=fdopen(fd,"r");
       fgets(req,BUFSIZ,f);
-      printf("got - %s \n",req);
+//      printf("got - %s \n",req);
       rde(f);
       prc(req,fd);
       fclose(f);
@@ -181,12 +186,58 @@ printf("Server addr 127.0.1.1 ,port 13000 \n");
 
 main(int ar,char ** arv)
 {
+  int *p,pp[5];
+  int opt,d;
   st=1;
   signal(SIGINT,ss1);
+  signal(SIGTERM,ss1);
 
-  websvr(NULL);
+  //p[3]=3;
+  //*p=1;
+
+  printf("Server addr 127.0.1.1 ,port 13000 \n");
+
+  d=0; 
+  while( (opt=getopt(ar,arv,"d:"))!=-1 ) 
+  {
+     //printf("- %d \n",opt);
+     switch(opt){
+     case 'd':
+        //printf("- %s \n",optarg); 
+        if(strstr(optarg,"aemon")!=NULL ) d=1;
+     break;
+     default:
+     break; 
+     }
+  }
   
-  while(st);
+     //printf("d- %d \n",d);
+
+  
+  if(d==0)
+  {
+      websvr(NULL);
+      while(st);
+  }else{
+
+    if(fork()==0)
+    {//child
+   
+      setsid();//
+      close(0);
+      close(1);
+      close(2);
+
+      //chdir("/");
+    
+      openlog("myweb",LOG_PID |LOG_CONS, LOG_DAEMON);
+      syslog(LOG_INFO,"Start");
+      closelog();
+
+      websvr(NULL);
+      while(st);
+     }
+   }
 
   printf( "---\n");
 }
