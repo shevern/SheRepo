@@ -46,9 +46,6 @@ int main(int args, char **argv, char **argc)
   char c=1,cc[100];
 
 
-
-
-
    if(args!=3) return;
    si=atoi(argv[2]);
 
@@ -79,37 +76,5 @@ int main(int args, char **argv, char **argc)
 
 exit(0);
 
-
-
-   if(args!=4) return;
-   fsz=atoi(argv[2]);
-   msz=atoi(argv[3]);
-
-// mmap  munmap  msync
-// fstat
-
-   fdz=open("/dev/zero",O_RDWR);
-   fdr=open(argv[1],O_RDWR|O_CREAT); //
-   //fdr=open(argv[1],O_RDWR|O_CREAT|O_TRUNC); // auto  increase size
-   lseek(fdr,fsz-1,SEEK_SET);   //set size
-   write(fdr,"",1); 
-   ar=mmap(NULL,msz,PROT_READ|PROT_WRITE,MAP_SHARED,fdr,0);
-   //ar=mmap(NULL,msz,PROT_READ|PROT_WRITE,MAP_SHARED,fdz,0);// init /dev/zero
-   //  MAP_SHARED   -  for parent/child proc
-   close(fdz);
-   close(fdr);
-
-   psz=sysconf(_SC_PAGESIZE);
-   printf("psz %d \n",psz);
-
-   //test
-   for(i=0;i<max(fsz,msz);i+=psz)
-   {
-     printf("- %d  %d \n",i,ar[i]);     
-     ar[i]=1;
-     printf("- %d  %d \n",i+psz-1,ar[i+psz-1]);     
-     ar[i+psz-1]=1;
-   }
- // printf(" %0.2f \n",a);
 
 }

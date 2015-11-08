@@ -10,6 +10,7 @@
 
 #include <poll.h>
 
+#define oops(e) { perror(e);exit(1);}
 
 int pin,pout; 
 int st;
@@ -66,7 +67,7 @@ int main(int args, char **argv, char **argc)
   struct timeval tv;
   int rt;
    
-  struct pollfd pfd[2];  
+  struct pollfd pfd[3];  
  
   tv.tv_sec=5;
   tv.tv_usec=0;  
@@ -95,27 +96,34 @@ int main(int args, char **argv, char **argc)
   }
 
   st=1;
-  pthread_create(&th[0],NULL,f1,&argv[1][0]);
+/*  pthread_create(&th[0],NULL,f1,&argv[1][0]);
   pthread_create(&th[1],NULL,f2,&argv[2][0]);
   pthread_join(th[0],NULL);
   pthread_join(th[1],NULL); 
+*/
+
+  pin=open(&argv[1][0],O_RDONLY|O_NONBLOCK);
+  if(pin==-1)oops("open pin");
+
+  pout=open(&argv[2][0],O_WRONLY);
+  if(pout==-1)oops("open pout");
+
 
   //pthread_create(&th[0],NULL,prd,NULL);
 
   printf("qq3 \n");
 
-  pfd[0].fd=0;
-  pfd[0].events=POLLIN;
-  pfd[1].fd=pin;
-  pfd[2].events=POLLIN;
- 
- 
   while(7)
   {
 
-    //sleep(1);
+    sleep(1);
 
-    rt=poll(&pfd,2,-1);
+    pfd[0].fd=0;
+    pfd[0].events=POLLIN;
+    pfd[1].fd=pin;
+    pfd[1].events=POLLIN;
+
+    rt=poll(pfd,2,-1);
  
     if(rt>0)
     {
@@ -123,25 +131,19 @@ int main(int args, char **argv, char **argc)
 
        if(rt==1)  // console
        {   
-        //   printf("qq2 Cnsl \n");
+           printf("qq 1 - 1 Cnsl \n");
            if( (i=read(0,ss,100))>0)
-           //while((ns=read(0,ss,1000))>0)
+           //while(  (  i=read(0,ss,100)  )>0   )
            //if(gets(ss)!=NULL)
            {        
-       //     printf("qq3  \n");
+              printf("qq - 1 2  \n");
               ss[i]='\0';
               printf("out-  %s\n",ss);
               l=strlen(ss);
-              if (write(pout,ss,l)==-1)
-              {
-                perror("Write "); exit(1);
-              }
-        
-           }else{
-               printf("E 1 \n");
+              if (write(pout,ss,l)==-1)oops("Write ");
            }
+           else{ printf("E 1 \n");  }
         }
-       
 
         if(rt==2)  // pipe
         {   
@@ -156,11 +158,9 @@ int main(int args, char **argv, char **argc)
     
     }else{
            printf("E 2  %d  \n",rt);
-           if(rt==0)
-           {
-              printf("Tout  %d  \n",rt);
-           }
+           if(rt==0) printf("Tout  %d  \n",rt);
    }
+   printf("End \n"); 
 
   
   }
