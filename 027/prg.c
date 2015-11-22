@@ -18,7 +18,6 @@
 
 #include <sched.h>
 
-#include <sys/mount.h>
 
 
 //   
@@ -31,60 +30,34 @@ main(int ar,char ** arv)
   char *p,pp[50];
   int f; 
   
-
-   mkdir("a1",0777);
-   mkdir("a2",0777);
-   mkdir("a3",0777);
-
-   //mount("proc","./a1","proc",0,NULL);
-
-
     if((f=fork())==0)
     {//child
-       //unshare(CLONE_NEWNS);
-       //unshare(CLONE_NEWUTS);
-       unshare(CLONE_NEWPID);
+      // unshare(CLONE_NEWNS);
+       unshare(CLONE_NEWUTS);
 
-       mount("proc","./a1","proc",0,NULL);
-
-
-//***********
-       if((f=fork())==0)
-       {//child
-         //unshare(CLONE_NEWNS);
-         //unshare(CLONE_NEWUTS);
-         unshare(CLONE_NEWPID);
-
-         mount("proc","./a2","proc",0,NULL);
+       gethostname((char *)&pp[0],10); 
+       pp[10]=0;
+       printf( "child hst %s \n",pp); 
 
 
-//************
-          if((f=fork())==0)
-          {//child
-             //unshare(CLONE_NEWNS);
-             //unshare(CLONE_NEWUTS);
-             unshare(CLONE_NEWPID);
+       //if(sethostname("ubuntu",6)<0) oops("st");
+       if(sethostname("qqqqqq",6)<0) oops("st");
 
-             mount("proc","./a3","proc",0,NULL);
+       gethostname((char *)&pp[0],10); 
 
-             while(9);
-             exit(0);
-           }
-//*************
-
-
-
-          while(9);
-          exit(0);
-      }
-//*****************
-
-       while(9);
+       pp[10]=0;
+       printf( " child hst  %s \n",(char *)pp); 
+       //while(9);
        exit(0);
+
     }
 
-       //waitpid(f,NULL,0);
-       while(9);
+       sleep(1);
+       waitpid(f,NULL,0);
+       gethostname(&pp[0],10); 
+       pp[10]=0;
+       printf( "prn hst %s \n",(char *)pp); 
+
 }
 
 
