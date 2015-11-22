@@ -1,0 +1,25 @@
+В настоящий момент я создал пару страничек с полезными ссылками и с популярными bash командами, которые полезно иметь в голове или перед глазами.
+
+https://github.com/krinkin/niitm-linux-2015/wiki/Links-and-materials
+
+Ссылка на курс
+https://stepic.org/course/%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B2-Linux-73/syllabus
+
+
+
+
+//Задачи
+
+https://github.com/krinkin/niitm-linux-2015/wiki/Задания-(модуль-1)
+
+
+//Отчет
+
+https://docs.google.com/spreadsheets/d/1F6rIAZI-00BEmHPLJfT3t0Cc5aIo0VqRY19KZUy_bMc/edit
+
+
+https://yadi.sk/d/x5CjDyjSk3gm3
+
+
+
+niitm-linux-2015@osll.ru
