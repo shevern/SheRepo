@@ -131,7 +131,7 @@ main(int ar,char ** arv)
    if( connect(sock_id, (struct sockaddr*)&saddr,sizeof(saddr))==-1)
          oops("Conn");
    //if( connect(sock_id,arp->ai_addr,arp->ai_addrlen)!=-1) break; 
-   printf("Conn to svr %s %d \n",(char*)inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+ //  printf("Conn to svr %s %d \n",(char*)inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
 
    pthread_create(&th,NULL,fcli,NULL);
 

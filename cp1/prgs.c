@@ -279,7 +279,7 @@ main(int ar,char ** arv)
    nprt=13000;
    nprt=atoi(var);
 
-   printf("Svr Name- %s \n",svrnm);
+   printf("Svr Name-  127.0.1.1  %s \n",svrnm);
 
 
 if(fork()==0)

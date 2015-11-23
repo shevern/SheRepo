@@ -267,7 +267,7 @@ main(int ar,char ** arv)
 
    //  Get (choose one of ) address of host
    gethostname(hostnm,256); 
-   printf("HostName- %s\n",hostnm);
+   printf("HostName- 127.0.1.1    %s\n",hostnm);
 
    hp=gethostbyname(hostnm);  // hostent - list of addresses, aliases, ...
    //hp=gethostbyaddr( );  // hostent - list of addresses, aliases, ...
@@ -282,7 +282,7 @@ main(int ar,char ** arv)
    bcopy( (void*)hp->h_addr, (void*)&saddr.sin_addr, hp->h_length);// cpy addr
    saddr.sin_port=htons(nprt);  //to NetWk byte order
    saddr.sin_family=AF_INET; // 
-   printf("svr addr %s prt %d \n",(char*)inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
+//   printf("svr addr %s prt %d \n",(char*)inet_ntoa(saddr.sin_addr),ntohs(saddr.sin_port));
    //*********************************
 
    // ***** STREAM  (TCP)  part
@@ -302,7 +302,7 @@ main(int ar,char ** arv)
       sock_fd=accept(sock_id,(struct sockaddr*)&caddr,&skln);  // accept
       //sock_fd=accept(sock_id,NULL,NULL);  // accept
       if(sock_id==-1) oops("acce");
-      printf("Client Connected - %s  %d \n",(char*)inet_ntoa(caddr.sin_addr ) ,                                            caddr.sin_port);       
+//      printf("Client Connected - %s  %d \n",(char*)inet_ntoa(caddr.sin_addr ) ,                                            caddr.sin_port);       
 /*
       //  var 1
       sock_fp=fdopen(sock_fd,"w");
@@ -317,7 +317,7 @@ main(int ar,char ** arv)
 */
       i=gtc();
       if(i<0){printf("Too many cli");continue;} 
-      sprintf(clis[i].adr, "Addr %s",(char*) inet_ntoa(caddr.sin_addr));       
+ //     sprintf(clis[i].adr, "Addr %s",(char*) inet_ntoa(caddr.sin_addr));       
       sprintf(clis[i].prt,"Prt %d", ntohs(caddr.sin_port));
       clis[i].f=1;    
       clis[i].sock_fd=sock_fd;  
