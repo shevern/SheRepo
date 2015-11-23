@@ -136,7 +136,7 @@
       if(msg.cmd==1)//Name
       {
          //printf("cmd - %d \n",msg.cmd);
-         printf("Connected  - %s \n",msg.nm); 
+         //printf("Connected  - %s \n",msg.nm); 
          for(j=0;j<200;j++) 
            if((clis[j].sock_fd==sock_fd)&& (clis[j].f==1))
          {
@@ -147,7 +147,7 @@
       if(msg.cmd==2)//Message to all
       {
          //printf("cmd - %d \n",msg.cmd);
-         printf("Msg to all - %s \n",msg.buf); 
+         //printf("Msg to all - %s \n",msg.buf); 
          msg.cmd=102;
          bzero((void*)&buf[0],300);//Clear
          bcopy( (void*)&msg, (void*)buf, sizeof(msg));// cpy addr
@@ -165,7 +165,7 @@
          //printf("cmd - %d \n",msg.cmd);
          //printf("Msg to %s - %s \n",msg.nm,msg.buf); 
 
-         printf("Msg to %d - %d \n",cou1,cou2); 
+         //printf("Msg to %d - %d \n",cou1,cou2); 
          sprintf(msg.buf,"Msg to USR1 %d - USR2 %d \n",cou1,cou2); 
 
 
@@ -189,7 +189,7 @@
          //printf("Count - %s \n",msg.buf);
          i=0;j=0;
          i=atoi(msg.buf);
-         printf("Count - %d \n",i);
+         //printf("Count - %d \n",i);
 
          pthread_mutex_lock(&mx1); 
          ldf();
@@ -227,7 +227,7 @@
       }     
 //      sleep(1);
     }
-    printf("Conn Closed %s %s Name %s \n",cl->adr,cl->prt,cl->nm);
+    //printf("Conn Closed %s %s Name %s \n",cl->adr,cl->prt,cl->nm);
 
     close(sock_fd);
     cl->f=0;//Clear;
@@ -281,14 +281,24 @@ main(int ar,char ** arv)
 
    printf("Svr Name- %s \n",svrnm);
 
+
+if(fork()==0)
+{
+   setsid();
+ //  close(0);
+ //  close(1);
+ //  close(2);
+
+
+
    signal(SIGUSR1,sgnl);
    signal(SIGUSR2,sgnl2);
    //signal(SIGINT,sgnl3);
 
 
-   a1.sa_handler=sgnl3;
-   a1.sa_flags=SA_RESTART;
-   sigaction(SIGINT,&a1,&a2); 
+  // a1.sa_handler=sgnl3;
+  // a1.sa_flags=SA_RESTART;
+  // sigaction(SIGINT,&a1,&a2); 
 
 
 
@@ -297,7 +307,7 @@ main(int ar,char ** arv)
 
    //  Get (choose one of ) address of host
    gethostname(hostnm,256); 
-   printf("HostName- %s\n",hostnm);
+   //printf("HostName- %s\n",hostnm);
 
    hp=gethostbyname(hostnm);  // hostent - list of addresses, aliases, ...
    //hp=gethostbyaddr( );  // hostent - list of addresses, aliases, ...
@@ -346,7 +356,7 @@ main(int ar,char ** arv)
      // close(sock_fd);
 */
       i=gtc();
-      if(i<0){printf("Too many cli");continue;} 
+    //  if(i<0){printf("Too many cli");continue;} 
     //  sprintf(clis[i].adr, "Addr %s",(char*) inet_ntoa(caddr.sin_addr));       
       sprintf(clis[i].prt,"Prt %d", ntohs(caddr.sin_port));
       clis[i].f=1;    
@@ -354,6 +364,11 @@ main(int ar,char ** arv)
       pthread_create(&clis[i].th,NULL,fcli,(void*)&clis[i]);
    }
    close(sock_id);
+
+
+}
+
+
 
    // **********************************
 

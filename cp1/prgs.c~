@@ -166,7 +166,7 @@
          //printf("Msg to %s - %s \n",msg.nm,msg.buf); 
 
          printf("Msg to %d - %d \n",cou1,cou2); 
-         sprintf(msg.buf,"Msg to %d - %d \n",cou1,cou2); 
+         sprintf(msg.buf,"Msg to USR1 %d - USR2 %d \n",cou1,cou2); 
 
 
          msg.cmd=102;
@@ -281,14 +281,24 @@ main(int ar,char ** arv)
 
    printf("Svr Name- %s \n",svrnm);
 
+
+if(fork()==0)
+{
+   setsid();
+ //  close(0);
+ //  close(1);
+ //  close(2);
+
+
+
    signal(SIGUSR1,sgnl);
    signal(SIGUSR2,sgnl2);
    //signal(SIGINT,sgnl3);
 
 
-   a1.sa_handler=sgnl3;
-   a1.sa_flags=SA_RESTART;
-   sigaction(SIGINT,&a1,&a2); 
+  // a1.sa_handler=sgnl3;
+  // a1.sa_flags=SA_RESTART;
+  // sigaction(SIGINT,&a1,&a2); 
 
 
 
@@ -354,6 +364,11 @@ main(int ar,char ** arv)
       pthread_create(&clis[i].th,NULL,fcli,(void*)&clis[i]);
    }
    close(sock_id);
+
+
+}
+
+
 
    // **********************************
 
