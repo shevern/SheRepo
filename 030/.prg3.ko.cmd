@@ -1,0 +1,1 @@
+cmd_/home/study/SheRepo/030/prg3.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/study/SheRepo/030/prg3.ko /home/study/SheRepo/030/prg3.o /home/study/SheRepo/030/prg3.mod.o

@@ -23,3 +23,5 @@ https://yadi.sk/d/x5CjDyjSk3gm3
 
 
 niitm-linux-2015@osll.ru
+
+http://aszt.inf.elte.hu/~ceepush81/slides/LinuDriv3.pdf
