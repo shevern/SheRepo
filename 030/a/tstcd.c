@@ -15,16 +15,26 @@ main()
 {
 
   int f,r;
-  char *msg="dddddddddddd\n";
+  char *msg="ddddddddddddoooopppppppppp \0\n";
   char msg2[100];
 
   msg2[99]='\0';
 
-  if( open("cdev",0)<0 ) {printf("Err open \n"); exit(0);}
+  if( (f=open("cdev",0))<0 ) {printf("Err open \n"); exit(0);}
 
-  write(f,msg,10);
-  if ( read(f,msg2,10)!=-1){ printf("%s\n",msg2); }
-  else {printf("E read \n");}
+  write(f,(void *)msg,10);
+  r=ioctl(f,IOCTL_SET_MSG,(unsigned long)msg); 
+  //printf("ioctl %d\n",r);
+
+ // if ( read(f,msg2,10)!=-1){ printf("%s\n",msg2); }
+ // else {printf("E read \n");}
+
+  ioctl(f,IOCTL_GET_MSG,(unsigned long)msg2);
+  printf("%s\n",msg2);
+
+  
+
+
 
 
 

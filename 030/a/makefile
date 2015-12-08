@@ -1,7 +1,7 @@
 
-prg3: prg3.o
-	cc -o prg3 prg3.o
-prg3.o: prg3.c
-	cc -c prg3.c
+tstcd: tstcd.o
+	cc -o tstcd tstcd.o
+tstcd.o: tstcd.c
+	cc -c tstcd.c
 clean:
-	rm prg3 prg3.o
+	rm tstcd tstcd.o

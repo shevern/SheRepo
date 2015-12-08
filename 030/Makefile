@@ -1,4 +1,4 @@
-obj-m += prg3.o
+obj-m += prgcd.o
 
 
 all:

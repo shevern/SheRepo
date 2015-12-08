@@ -1,5 +1,3 @@
-obj-m += prg.o
-obj-m += prg2.o
 obj-m += prg3.o
 
 

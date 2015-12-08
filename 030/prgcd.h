@@ -10,6 +10,8 @@
 #define IOCTL_SET_MSG _IOR(m_num,0,char *)
 #define IOCTL_GET_MSG _IOR(m_num,1,char *)
 #define IOCTL_GET_NTH_BYTE _IOWR(m_num,2,int)
+#define IOCTL_GET_NTH_BYTE2 _IOW(m_num,3,int *)
+
 //-----------------
 #define DEVICE_FILE_NAME "cdev"
 

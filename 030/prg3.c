@@ -66,14 +66,6 @@ static int __init myinit(void)
    }
 
 
-/*   if( (e=register_chrdev_region(MKDEV(800,0),1,"mydev")) <0)
-   {
-       printk(KERN_INFO "prg3 Errr register_chrdev_region   %d \n",e);
-       return 0;
-   }
-*/
-
-
    
    f_node=MKDEV(800,0);
 /*

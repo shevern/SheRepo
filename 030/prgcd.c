@@ -33,9 +33,10 @@ static int Dev_Op=0;
 
 static char Msg[blen];
 static char *Msg_Ptr,*MsgP;
+int ioln=0;
 
-static DECLARE_WAIT_QUEUE_HEAD(wq);
-static wait_queue_head_t inq, outq;
+//static DECLARE_WAIT_QUEUE_HEAD(wq);
+//static wait_queue_head_t inq, outq;
 
 
 /* macros & functions to use
@@ -89,8 +90,8 @@ static int device_open(struct inode *inode, struct file *fl)
    if(!MsgP) { return -ENOMEM; }
    memset(MsgP,0,blen*sizeof(char*)); 
 
-   init_waitqeueu_head(&inq);
-   init_waitqeueu_head(&outq);
+//   init_waitqeueu_head(&inq);
+//   init_waitqeueu_head(&outq);
 
    try_module_get(THIS_MODULE);
    return suc;
@@ -107,17 +108,20 @@ static int device_release(struct inode *inode, struct file *fl)
    return suc;
 }
 
-static int device_flush(struct file *fl)
-{
-   return suc;
-}
+//static int device_flush(struct file *fl)
+//{
+//   return suc;
+//}
 
 static ssize_t device_read(struct file *fl, char __user *buf, size_t ln, loff_t *ofst)
 {
    int bt_rd=0;
+
+  printk(KERN_WARNING "prgcd read  \n");
+
    if(Msg_Ptr==0) return 0;
 
-  //    I ******
+  //   I ******
  /*  while (ln && *Msg_Ptr)
    {
       //            From     To   put_user(local,ptr)
@@ -137,11 +141,13 @@ static ssize_t device_read(struct file *fl, char __user *buf, size_t ln, loff_t 
    return bt_rd;
 }
 
-static ssize_t device_write(struct file *file, const char __user * buf,
+static ssize_t device_write(struct file *file, const char * buf,
                             size_t ln, loff_t *ofst)
 {
   int i;
 
+  printk(KERN_WARNING "prgcd write  \n");
+ 
   // from Usr to Knl - get_user(local,ptr) To   From
   //for(i=0;i<ln && i<blen; i++) get_user(Msg[i],buf+i);
   //Msg_Ptr=Msg; 
@@ -149,16 +155,19 @@ static ssize_t device_write(struct file *file, const char __user * buf,
   //*****
   if( copy_from_user(MsgP,buf,ln) ) return -EFAULT;
   i=ln;
-
+  *ofst=*ofst + ln;
+	printk(KERN_INFO "%s written\n", MsgP);
   return i;
 }
 
 static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)// file, cmd, arg
 {
-   int i,e;
+   int i;
    char *tmp;
    char ch;
-
+   //void __user *argp=(void __user *)par;
+   char __user *argp=(char __user *)par;
+  
    //  Eddition checking
 /*
   if( _IOC_TYPE(cmd)!=m_num ) return -ENOTTY;
@@ -171,22 +180,36 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
 
   //  capable (CAP_SYS_ADMIN)
 
+    printk(KERN_WARNING "prgcd ioctl  \n");
+
+
    switch (cmd)
    {
 
     case IOCTL_SET_MSG:  // Usr to Knl
 
+    printk(KERN_WARNING "prgcd ioctl IOCTL_SET_MSG \n");
+
+       //if (copy_from_user(&rtc_tm, argp, sizeof(struct rtc_time)))  - length
+
        tmp= (char*) par; //  (char __user *) par 
        get_user(ch,tmp);
        for(i=0; ch && i<blen; i++,tmp++) get_user(ch,tmp);// get length
-
-       device_write(fl, (char*) par,i,0);
+       //i=5;
+       if( copy_from_user(MsgP,argp,i) ) return -EFAULT;
+       ioln=i;
+       //device_write(fl, (char*) par,i,0);
     break;
 
     case IOCTL_GET_MSG:
 
-       i=device_read(fl, (char*)par, 99, 0); // To Usr
-       put_user('\0', (char*) par+1);
+    printk(KERN_WARNING "prgcd ioctl IOCTL_GET_MSG \n");
+
+       //i=device_read(fl, (char*)par, 99, 0); // To Usr
+       //put_user('\0', (char*) par+1);
+       
+       if( copy_to_user(argp,MsgP,ioln)) return -EFAULT;
+       put_user('\0', (char*) MsgP+ioln);
     break;
 
     case IOCTL_GET_NTH_BYTE:
@@ -203,20 +226,19 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
 
 
 
-
+/*
 static int device_poll(struct file *fl, poll_table *wt)
 {
   unsigned int r=0;
 
    //poll_wait(fl,&inq,wt);
-
   
    //if(...) r=POLLIN  | POLLRDNORM;
    //if(...) r=POLLOUT | POLLWRNORM;
 
    return r;
 }
-
+*/
 
 
 //***
@@ -229,7 +251,7 @@ struct file_operations fops={
   .compat_ioctl=device_ioctl,
   .open= device_open,
   .release=device_release,
-  .flush = device_flush,
+  //.flush = device_flush,
 };
 
 
