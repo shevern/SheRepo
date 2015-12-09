@@ -116,8 +116,8 @@ static int device_release(struct inode *inode, struct file *fl)
 static ssize_t device_read(struct file *fl, char __user *buf, size_t ln, loff_t *ofst)
 {
    int bt_rd=0;
-
-  printk(KERN_WARNING "prgcd read  \n");
+   int ii;
+  printk(KERN_WARNING "prgcd read %d \n",ln);
 
    if(Msg_Ptr==0) return 0;
 
@@ -135,7 +135,12 @@ static ssize_t device_read(struct file *fl, char __user *buf, size_t ln, loff_t 
   // 0-ok  1-fail
 
    //   II ****** 
-   if(copy_to_user(buf,MsgP,ln)) return-EFAULT; 
+   
+   if(blen<ln) ln=blen;
+   MsgP[ln-1]=0;
+   if(copy_to_user(buf,MsgP,ln)) return -EFAULT; 
+   put_user(ln,ofst); //from Knl to Usr
+   //*ofst=ln;
    bt_rd=ln;
 
    return bt_rd;
@@ -153,9 +158,12 @@ static ssize_t device_write(struct file *file, const char * buf,
   //Msg_Ptr=Msg; 
 
   //*****
+  
+  if(blen<ln) return -EFAULT;
+  MsgP[ln-1]='\0';
   if( copy_from_user(MsgP,buf,ln) ) return -EFAULT;
   i=ln;
-  *ofst=*ofst + ln;
+  *ofst=ln;
 	printk(KERN_INFO "%s written\n", MsgP);
   return i;
 }
