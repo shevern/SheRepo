@@ -4,6 +4,8 @@
 #include <linux/fs.h>
 #include <asm/uaccess.h>
 
+#include <linux/sched.h>
+
 #include <linux/types.h>
 #include <linux/kdev_t.h>
 #include <linux/cdev.h>
@@ -173,6 +175,7 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
    int i;
    char *tmp;
    char ch;
+   struct task_struct *tsk;
    //void __user *argp=(void __user *)par;
    char __user *argp=(char __user *)par;
   
@@ -218,6 +221,17 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
        
        if( copy_to_user(argp,MsgP,ioln)) return -EFAULT;
        put_user('\0', (char*) MsgP+ioln);
+
+   
+     for(i=0;i<10;i++)
+     {
+     //   tsk=pid_task(find_vpid(i),PIDTYPE_PID);
+    //    printk(KERN_INFO "prgcd pid %s \n", tsk->comm);        
+     }
+
+
+
+
     break;
 
     case IOCTL_GET_NTH_BYTE:
