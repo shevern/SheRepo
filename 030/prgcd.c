@@ -10,6 +10,8 @@
 #include <linux/kdev_t.h>
 #include <linux/cdev.h>
 
+#include <linux/interrupt.h>
+
 #include <linux/slab.h>
 
 #include <linux/wait.h>
@@ -24,18 +26,22 @@
 //   Stub for Sym Dvr 
 
 
-  int ret1,ret2;
+  static int ret1,ret2,ret3,count=0;
   dev_t dev;
   int min=0,maj=800;
 
   struct cdev *mycdev1,mycdev2;
 
+ // extern struct pid* find_vpid(int nr);
 
 static int Dev_Op=0;
 
 static char Msg[blen];
 static char *Msg_Ptr,*MsgP;
 int ioln=0;
+
+static char *fid="aaaa";
+
 
 //static DECLARE_WAIT_QUEUE_HEAD(wq);
 //static wait_queue_head_t inq, outq;
@@ -219,17 +225,19 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
        //i=device_read(fl, (char*)par, 99, 0); // To Usr
        //put_user('\0', (char*) par+1);
        
+       ioln=sprintf(MsgP,"cou=  %d \n",count);
+         
        if( copy_to_user(argp,MsgP,ioln)) return -EFAULT;
        put_user('\0', (char*) MsgP+ioln);
 
    
-     for(i=0;i<10;i++)
+     for(i=0;i<3;i++)
      {
-     //   tsk=pid_task(find_vpid(i),PIDTYPE_PID);
-    //    printk(KERN_INFO "prgcd pid %s \n", tsk->comm);        
+        tsk=pid_task(find_vpid(i),PIDTYPE_PID);
+        printk(KERN_INFO "prgcd pid %s \n", tsk->comm);        
      }
 
-
+      printk(KERN_INFO "prgcd Cou %s \n", MsgP);
 
 
     break;
@@ -277,11 +285,26 @@ struct file_operations fops={
 };
 
 
-//****
+
+
+
+
+//***************   Interrupt ***************************
+static irqreturn_t hndl(int irq,void *dev_id)
+ {
+   count++;
+
+   return IRQ_HANDLED;  
+ }
+
+//**************************************************
+
+
+
 
 int init_module()
 {
-
+  
 
   // new way reg  ***
   //***  get number
@@ -316,6 +339,15 @@ int init_module()
   // old way reg  ***  
   //  ret2=register_chrdev(m_num,devnm,&fops);
 
+
+  //printk(KERN_WARNING "prgcd before request_irq  \n");
+  ret3=request_irq(19,hndl,IRQF_SHARED,"cdev",fid);
+  if(ret3<0){
+    printk(KERN_WARNING "prgcd request_irq err %d \n",ret3);
+    return ret3;
+  }
+  
+
   printk(KERN_WARNING "prgcd Ok-Up  \n");
   return 0;
 }
@@ -323,6 +355,8 @@ int init_module()
 void cleanup_module()
 {
   // del cdev
+
+  if(ret3>-1) free_irq(19,fid);
   if(ret2==0) cdev_del(&mycdev2);
   if(ret1==0) unregister_chrdev_region(dev,1);
 
@@ -330,6 +364,11 @@ void cleanup_module()
 // old way reg  *** 
 //  unregister_chrdev(m_num,devnm); 
 }
+
+
+MODULE_LICENSE("GPL v2");
+
+
 
 // lsmod |grep prg
 // insmod ./prgcd.ko

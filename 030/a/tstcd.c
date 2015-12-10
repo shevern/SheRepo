@@ -30,7 +30,7 @@ main()
  // else {printf("E read \n");}
 
   ioctl(f,IOCTL_GET_MSG,(unsigned long)msg2);
-  printf("%s\n",msg2);
+  printf("---%s \n",(char *)msg2);
 
   
 
