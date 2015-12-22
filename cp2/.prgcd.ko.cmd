@@ -1,1 +1,0 @@
-cmd_/home/study/SheRepo/cp2/prgcd.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/study/SheRepo/cp2/prgcd.ko /home/study/SheRepo/cp2/prgcd.o /home/study/SheRepo/cp2/prgcd.mod.o
