@@ -54,68 +54,93 @@ static struct net_device *netdev;
 //static DECLARE_WAIT_QUEUE_HEAD(wq);
 //static wait_queue_head_t inq, outq;
 
+static int mynets=0;
 
-
-
-
+//**********************************************************************
+//char *simeth_device="qqq";
 static struct mydevstr
 {
   struct net_device *dev;
-  char  nm[20]; 
+  char  nm[11]; 
+  struct net_device_stats stats;
 }  aaaa;
 
 
+static struct net_device_stats *  mynet_stats(struct net_device * dev)
+{
+  struct mydevstr *priv=netdev_priv(dev);
+  priv->stats.tx_bytes=mynets;
+  printk(KERN_WARNING "prgcd  mynet_stats  %d \n",mynets);
+  return &priv->stats;
+}
 
+//http://lxr.free-electrons.com/source/include/linux/skbuff.h#L536
+//http://lxr.free-electrons.com/source/arch/um/drivers/net_kern.c#L210
+static int dev_xmit(struct sk_buff *skb, struct net_device *dev)
+{
 
+  unsigned int length = skb->len;
 
+  //skb->data
+
+  printk(KERN_WARNING "prgcd  xmit proto -  %d  len \n",skb->protocol,skb->data_len);
+  mynets++;//skb->data_len;
+  
+
+  dev_kfree_skb(skb);
+  return NETDEV_TX_OK;
+}
 
 //http://lxr.free-electrons.com/source/arch/ia64/hp/sim/simeth.c#L158
 static int netdev_open(struct net_device *dev)
 {
-   
+   printk(KERN_WARNING "prgcd dev on \n");
    return 0;
 }
 
 static int netdev_stop(struct net_device *dev)
 {
+   printk(KERN_WARNING "prgcd dev off \n");
   return 0;
 }
-
 
 //http://lxr.free-electrons.com/source/include/linux/netdevice.h#L1063
 struct net_device_ops devops={
   .ndo_open = netdev_open,
   .ndo_stop = netdev_stop,
+  .ndo_start_xmit=dev_xmit, 
+  .ndo_get_stats =mynet_stats,
 };
-
 
 static void netdev_init(struct net_device *dev)
 {
    struct mydevstr *priv=netdev_priv(dev);
 
+   ether_setup(dev);
    //dev->flags = IFF_BROADCAST|IFF_MULTICAST|IFF_NOARP;
    dev->flags |= IFF_NOARP;
    dev->netdev_ops=&devops;
 
-   ether_setup(dev);
 }
 
 // http://lxr.free-electrons.com/source/net/appletalk/dev.c#L42
-
-//struct net_device
-
-
-static struct net_device *  netdev_create(int q)
+static struct net_device *  mynet_create(int q)
 {
+  int r;
   struct net_device * d;
-  d= alloc_netdev( sizeof(struct mydevstr), "lt99",NET_NAME_UNKNOWN, netdev_init);
-
-  free_netdev(dev);
+  d= alloc_netdev( sizeof(struct mydevstr), "ltqq",NET_NAME_UNKNOWN, netdev_init);
+  if(d!=NULL)
+  {
+   r=register_netdev(d);
+   printk(KERN_WARNING "prgcd register_netdev - %d \n",r);
+  }
+ 	
+  //free_netdev(netdev);
   return d;
 }
 
 
-
+//*************************************************************************
 
 
 
@@ -146,9 +171,6 @@ static int device_release(struct inode *inode, struct file *fl)
    Dev_Op--;
    
    if(MsgP) kfree(MsgP);
-   
-
-
 
    module_put(THIS_MODULE);
    return suc;
@@ -263,8 +285,8 @@ static long device_ioctl(struct file *fl, unsigned int cmd, unsigned long par)//
        //i=device_read(fl, (char*)par, 99, 0); // To Usr
        //put_user('\0', (char*) par+1);
        
-       ioln=sprintf(MsgP,"cou=  %d \n",count);
-         
+       ioln=sprintf(MsgP,"cou=  %d Net-%d \n",count,mynets);
+
        if( copy_to_user(argp,MsgP,ioln)) return -EFAULT;
        put_user('\0', (char*) MsgP+ioln);
 
@@ -388,10 +410,9 @@ int init_module()
   
   //*****  NET
 
-  netdev=netdev_create(1);
+  netdev=mynet_create(1);
   if(netdev==NULL){
     printk(KERN_WARNING "prgcd netdev_create err  \n");
-    return ;
   }
 
 
@@ -407,7 +428,7 @@ void cleanup_module()
   if(ret2==0) cdev_del(&mycdev2);
   if(ret1==0) unregister_chrdev_region(dev,1);
 
-
+  if(netdev!=NULL) unregister_netdev(netdev);
   if(netdev!=NULL)free_netdev(netdev);
 
   printk(KERN_WARNING "prgcd Ok -down  \n");
